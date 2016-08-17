@@ -1,0 +1,32 @@
+ul {
+  width: 220px;
+  position: relative;
+  top: 50px;
+  left: 25%;
+}
+
+li {
+  float: left;
+  display: block;
+  border: 1px solid black;
+  width: 20px;
+  background-color: #ddd;
+  text-align: center;
+  height: 20px;
+  font-size: 70px;
+  line-height: 126px;
+
+}
+
+li:hover {
+  background-color: yellow;
+  cursor: pointer;
+}
+
+li.green {
+  background-color: green;
+}
+
+li.blue {
+  background-color: blue;
+}
