@@ -1,0 +1,36 @@
+ul {
+  display: flex;
+  flex-direction: column-reverse;
+  border-bottom: 4px solid black;
+  width: 100px;
+  height: 100px;
+  list-style: none;
+  padding: 0px;
+  align-items: center;
+}
+
+ul:hover {
+
+  border-bottom: 4px solid blue;
+}
+
+figure {
+  display: flex;
+  width: 400px;
+  justify-content: space-between;
+}
+
+li {
+    flex: 0 0 auto;
+    background-color: #ddd;
+    margin: 2px;
+    border-radius: 15px;
+}
+
+h1 {
+  position: absolute;
+  top: 150px;
+  left: 20px;
+  width: 400px;
+  text-align: center;
+}
