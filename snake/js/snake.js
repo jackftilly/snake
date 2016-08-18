@@ -1,9 +1,10 @@
 
 class Snake {
 
-  constructor (length) {
+  constructor (game, length) {
     this.SNAKE_DIRS = [38, 39, 40, 37];
     this.dir = 38;
+    this.game = game;
     this.length = length;
     this.segments = [[5,5]];
     this.eatingVar = 0;
@@ -54,7 +55,14 @@ class Snake {
     if (newHead[0] > (this.length - 1) || newHead[0] < 0 ||
         newHead[1] > (this.length - 1) ||
         newHead[1] < 0 || this.suicide(newHead)) {
-        alert("You're dead");
+        this.eatingVar = 0;
+        this.game.lives -= 1;
+        if (this.game.lives === 0) {
+          alert("Game Over");
+          this.game.score = 0;
+          this.game.lives = 3;
+          this.game.level = 1;
+        }
         this.segments = [[5,5]];
       } else {
         this.segments.unshift(newHead);

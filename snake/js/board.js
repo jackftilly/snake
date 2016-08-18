@@ -19,6 +19,8 @@ class  Board {
       let [x,y] = element;
       this.grid[x][y] = "s";
     });
+    let [x,y] = this.snake.segments[0];
+    this.grid[x][y] = "h";
     this.grid[this.food[0]][this.food[1]] = "f";
   }
 

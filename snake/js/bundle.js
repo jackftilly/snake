@@ -44,8 +44,8 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const Game = __webpack_require__(4);
-	const View = __webpack_require__(3);
+	const Game = __webpack_require__(1);
+	const View = __webpack_require__(4);
 
 	$( () => {
 	  const rootEl = $('.snake');
@@ -55,20 +55,109 @@
 	  setInterval(() => {
 	    view.render.bind(that);
 	    view.render();
-	  }, 150);
+	  }, 100);
 	});
 
 
 /***/ },
 /* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const Board = __webpack_require__(2);
+	const Snake = __webpack_require__(3);
+
+	class Game {
+	  constructor (length) {
+	    this.snake = new Snake(this, length);
+	    this.length = length;
+	    this.board = new Board(this.snake, this.length);
+	    this.score = 0;
+	    this.level = 1;
+	    this.lives = 3;
+	    this.time = 0;
+	  }
+
+	  step() {
+	    this.snake.move();
+	    this.board.render();
+	    this.isEating();
+	    this.time += 1;
+	  }
+
+	  isEating() {
+	    if (this.snake.segments[0][0] === this.board.food[0] &&
+	        this.snake.segments[0][1] === this.board.food[1]) {
+	      this.board.food = this.board.placeFood();
+	      this.snake.eatingVar = 3;
+	      console.log(this.time);
+	      this.score += Math.ceil(this.level / 5) * Math.floor(50 / this.time);
+	      this.time = 0;
+
+	      this.level += 1;
+	    }
+	  }
+
+	}
+
+
+
+
+	module.exports = Game;
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	
+	class  Board {
+	  constructor (snake, length) {
+	    this.snake = snake;
+	    this.grid = Array(length);
+	    for (var i = 0; i < this.grid.length; i++) {
+	      this.grid[i] = Array(length).fill("b");
+	    }
+	    this.food = this.placeFood();
+	  }
+
+	  render () {
+	    this.grid.forEach((row, x) => {
+	      row.forEach((element, y) => {
+	        this.grid[x][y] = "b";
+	      });
+	    });
+	    this.snake.segments.forEach(element => {
+	      let [x,y] = element;
+	      this.grid[x][y] = "s";
+	    });
+	    let [x,y] = this.snake.segments[0];
+	    this.grid[x][y] = "h";
+	    this.grid[this.food[0]][this.food[1]] = "f";
+	  }
+
+	  placeFood() {
+	    let x = Math.floor(Math.random() * this.grid.length);
+	    let y = Math.floor(Math.random() * this.grid.length);
+	    return [x,y];
+	  }
+
+	}
+
+
+	module.exports = Board;
+
+
+/***/ },
+/* 3 */
 /***/ function(module, exports) {
 
 	
 	class Snake {
 
-	  constructor (length) {
+	  constructor (game, length) {
 	    this.SNAKE_DIRS = [38, 39, 40, 37];
 	    this.dir = 38;
+	    this.game = game;
 	    this.length = length;
 	    this.segments = [[5,5]];
 	    this.eatingVar = 0;
@@ -119,7 +208,14 @@
 	    if (newHead[0] > (this.length - 1) || newHead[0] < 0 ||
 	        newHead[1] > (this.length - 1) ||
 	        newHead[1] < 0 || this.suicide(newHead)) {
-	        alert("You're dead");
+	        this.eatingVar = 0;
+	        this.game.lives -= 1;
+	        if (this.game.lives === 0) {
+	          alert("Game Over");
+	          this.game.score = 0;
+	          this.game.lives = 3;
+	          this.game.level = 1;
+	        }
 	        this.segments = [[5,5]];
 	      } else {
 	        this.segments.unshift(newHead);
@@ -139,47 +235,7 @@
 
 
 /***/ },
-/* 2 */
-/***/ function(module, exports) {
-
-	
-	class  Board {
-	  constructor (snake, length) {
-	    this.snake = snake;
-	    this.grid = Array(length);
-	    for (var i = 0; i < this.grid.length; i++) {
-	      this.grid[i] = Array(length).fill("b");
-	    }
-	    this.food = this.placeFood();
-	  }
-
-	  render () {
-	    this.grid.forEach((row, x) => {
-	      row.forEach((element, y) => {
-	        this.grid[x][y] = "b";
-	      });
-	    });
-	    this.snake.segments.forEach(element => {
-	      let [x,y] = element;
-	      this.grid[x][y] = "s";
-	    });
-	    this.grid[this.food[0]][this.food[1]] = "f";
-	  }
-
-	  placeFood() {
-	    let x = Math.floor(Math.random() * this.grid.length);
-	    let y = Math.floor(Math.random() * this.grid.length);
-	    return [x,y];
-	  }
-
-	}
-
-
-	module.exports = Board;
-
-
-/***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	
@@ -212,13 +268,24 @@
 	  this.game.step();
 	  let board = this.game.board;
 	  $('ul').remove();
-
-	  const $rows = $('<ul></ul>');
+	  $('h1.score').text(this.game.score);
+	  $('h1.lives').text(this.game.lives);
+	  $('h1.level').text(this.game.level);
+	  const $rows = $('<ul class="group"></ul>');
 	  board.grid.forEach((row) => {
 	    row.forEach((element) => {
 	      const $item = $('<li></li>');
 	      if (element === 's') {
 	        $item.addClass("green");
+	      } else if (element === 'h') {
+	        $item.addClass("head");
+	        if (this.game.snake.dir === 38) {
+	          $item.css("transform", "rotate(-90deg)");
+	        } else if (this.game.snake.dir === 40) {
+	          $item.css("transform", "rotate(90deg)");
+	        } else if (this.game.snake.dir === 37) {
+	          $item.css("transform", "rotate(180deg)");
+	        }
 	      } else if (element === 'f'){
 	        $item.addClass("blue");
 	      } else {
@@ -228,7 +295,7 @@
 	    });
 	  });
 	  $rows.css("list-style","none");
-	  $rows.css("width",`${this.game.length * 22}px`);
+	  $rows.css("width",`${this.game.length * 20}px`);
 	  this.$el.append($rows);
 	};
 
@@ -242,10 +309,12 @@
 	      switch(e.which) {
 	        case 37: // left
 	          snake.changeDir(3);
+
 	        break;
 
 	        case 38: // up
 	          snake.changeDir(0);
+
 	        break;
 
 	        case 39: // right
@@ -265,42 +334,6 @@
 	};
 
 	module.exports = View;
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	const Board = __webpack_require__(2);
-	const Snake = __webpack_require__(1);
-
-	class Game {
-	  constructor (length) {
-	    this.snake = new Snake(length);
-	    this.length = length;
-	    this.board = new Board(this.snake, this.length);
-	  }
-
-	  step() {
-	    this.snake.move();
-	    this.board.render();
-	    this.isEating();
-	  }
-
-	  isEating() {
-	    if (this.snake.segments[0][0] === this.board.food[0] &&
-	        this.snake.segments[0][1] === this.board.food[1]) {
-	      this.board.food = this.board.placeFood();
-	      this.snake.eatingVar = 3;
-	    }
-	  }
-
-	}
-
-
-
-
-	module.exports = Game;
 
 
 /***/ }

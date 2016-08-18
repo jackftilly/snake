@@ -28,13 +28,24 @@ View.prototype.render = function () {
   this.game.step();
   let board = this.game.board;
   $('ul').remove();
-
-  const $rows = $('<ul></ul>');
+  $('h1.score').text(this.game.score);
+  $('h1.lives').text(this.game.lives);
+  $('h1.level').text(this.game.level);
+  const $rows = $('<ul class="group"></ul>');
   board.grid.forEach((row) => {
     row.forEach((element) => {
       const $item = $('<li></li>');
       if (element === 's') {
         $item.addClass("green");
+      } else if (element === 'h') {
+        $item.addClass("head");
+        if (this.game.snake.dir === 38) {
+          $item.css("transform", "rotate(-90deg)");
+        } else if (this.game.snake.dir === 40) {
+          $item.css("transform", "rotate(90deg)");
+        } else if (this.game.snake.dir === 37) {
+          $item.css("transform", "rotate(180deg)");
+        }
       } else if (element === 'f'){
         $item.addClass("blue");
       } else {
@@ -44,7 +55,7 @@ View.prototype.render = function () {
     });
   });
   $rows.css("list-style","none");
-  $rows.css("width",`${this.game.length * 22}px`);
+  $rows.css("width",`${this.game.length * 20}px`);
   this.$el.append($rows);
 };
 
@@ -58,10 +69,12 @@ View.prototype.bindKeys = function () {
       switch(e.which) {
         case 37: // left
           snake.changeDir(3);
+
         break;
 
         case 38: // up
           snake.changeDir(0);
+
         break;
 
         case 39: // right

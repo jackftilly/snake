@@ -9,5 +9,5 @@ $( () => {
   setInterval(() => {
     view.render.bind(that);
     view.render();
-  }, 150);
+  }, 100);
 });

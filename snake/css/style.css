@@ -1,20 +1,25 @@
 ul {
-
+  border: 3px solid #bbb;
   position: relative;
   top: 50px;
   left: 25%;
+  padding: 0;
+}
+
+h1 {
+  display: inline;
 }
 
 li {
   float: left;
   display: block;
-  border: 1px solid black;
+  /*border: 1px solid black;*/
   width: 20px;
   background-color: #ddd;
   text-align: center;
   height: 20px;
-  font-size: 70px;
-  line-height: 126px;
+  font-size: 15px;
+  line-height: 20px;
 
 }
 
@@ -27,6 +32,23 @@ li.green {
   background-color: green;
 }
 
+li.head {
+  color: black;
+  background-color: orange;
+}
+
+li.head:before {
+  content: ":)";
+}
+
 li.blue {
   background-color: blue;
+}
+figure {
+
+}
+.group:after {
+  content: "";
+  display: block;
+  clear: both;
 }
