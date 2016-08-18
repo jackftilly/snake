@@ -49,13 +49,13 @@
 
 	$( () => {
 	  const rootEl = $('.snake');
-	  const game = new Game();
+	  const game = new Game(20);
 	  const view = new View(game, rootEl);
 	  let that = this;
 	  setInterval(() => {
 	    view.render.bind(that);
 	    view.render();
-	  }, 250);
+	  }, 150);
 	});
 
 
@@ -64,13 +64,12 @@
 /***/ function(module, exports) {
 
 	
-
-
 	class Snake {
 
-	  constructor () {
+	  constructor (length) {
 	    this.SNAKE_DIRS = [38, 39, 40, 37];
 	    this.dir = 38;
+	    this.length = length;
 	    this.segments = [[5,5]];
 	    this.eatingVar = 0;
 	  }
@@ -102,13 +101,25 @@
 	    }
 	    return [y, x];
 	  }
+	  suicide(pos) {
+	    let flag = false;
+	    this.segments.forEach ((element) => {
+	      if (element[0] === pos[0] &&
+	        element[1] === pos[1]) {
+	          flag = true;
+	        }
+	    });
+	    return flag;
+	  }
 
 	  move() {
 	    let head = this.segments[0];
 	    let next = this.direction();
 	    let newHead = [head[0] + next[0], head[1] + next[1]];
-	    if (newHead[0] > 9 || newHead[0] < 0 || newHead[1] > 9 || newHead[1] < 0) {
-	        alert("You're dead!");
+	    if (newHead[0] > (this.length - 1) || newHead[0] < 0 ||
+	        newHead[1] > (this.length - 1) ||
+	        newHead[1] < 0 || this.suicide(newHead)) {
+	        alert("You're dead");
 	        this.segments = [[5,5]];
 	      } else {
 	        this.segments.unshift(newHead);
@@ -156,8 +167,8 @@
 	  }
 
 	  placeFood() {
-	    let x = Math.floor(Math.random() * 10);
-	    let y = Math.floor(Math.random() * 10);
+	    let x = Math.floor(Math.random() * this.grid.length);
+	    let y = Math.floor(Math.random() * this.grid.length);
 	    return [x,y];
 	  }
 
@@ -182,17 +193,18 @@
 	View.prototype.setupBoard = function () {
 	  const $rows = $('<ul></ul>');
 
-	  for (var i = 0; i < 100; i++) {
-	    let row = Math.floor(i / 10);
-	    let col = Math.floor(i % 10);
+
+	  for (var i = 0; i < Math.pow(this.game.length, 2); i++) {
+	    let row = Math.floor(i / this.game.length);
+	    let col = Math.floor(i % this.game.length);
 	    const $item = $('<li></li>');
 	    $item.data("pos", [row, col]);
 	    // $item.text('X');
 	    $rows.append($item);
 	  }
 	  $rows.css("list-style","none");
-
 	  this.$el.append($rows);
+
 
 	};
 
@@ -200,6 +212,7 @@
 	  this.game.step();
 	  let board = this.game.board;
 	  $('ul').remove();
+
 	  const $rows = $('<ul></ul>');
 	  board.grid.forEach((row) => {
 	    row.forEach((element) => {
@@ -215,6 +228,7 @@
 	    });
 	  });
 	  $rows.css("list-style","none");
+	  $rows.css("width",`${this.game.length * 22}px`);
 	  this.$el.append($rows);
 	};
 
@@ -261,9 +275,10 @@
 	const Snake = __webpack_require__(1);
 
 	class Game {
-	  constructor () {
-	    this.snake = new Snake();
-	    this.board = new Board(this.snake, 10);
+	  constructor (length) {
+	    this.snake = new Snake(length);
+	    this.length = length;
+	    this.board = new Board(this.snake, this.length);
 	  }
 
 	  step() {
@@ -273,8 +288,6 @@
 	  }
 
 	  isEating() {
-	    console.log(this.snake.segments[0]);
-	    console.log(this.board.food);
 	    if (this.snake.segments[0][0] === this.board.food[0] &&
 	        this.snake.segments[0][1] === this.board.food[1]) {
 	      this.board.food = this.board.placeFood();

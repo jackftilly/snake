@@ -1,11 +1,10 @@
 
-
-
 class Snake {
 
-  constructor () {
+  constructor (length) {
     this.SNAKE_DIRS = [38, 39, 40, 37];
     this.dir = 38;
+    this.length = length;
     this.segments = [[5,5]];
     this.eatingVar = 0;
   }
@@ -37,13 +36,25 @@ class Snake {
     }
     return [y, x];
   }
+  suicide(pos) {
+    let flag = false;
+    this.segments.forEach ((element) => {
+      if (element[0] === pos[0] &&
+        element[1] === pos[1]) {
+          flag = true;
+        }
+    });
+    return flag;
+  }
 
   move() {
     let head = this.segments[0];
     let next = this.direction();
     let newHead = [head[0] + next[0], head[1] + next[1]];
-    if (newHead[0] > 9 || newHead[0] < 0 || newHead[1] > 9 || newHead[1] < 0) {
-        alert("You're dead!");
+    if (newHead[0] > (this.length - 1) || newHead[0] < 0 ||
+        newHead[1] > (this.length - 1) ||
+        newHead[1] < 0 || this.suicide(newHead)) {
+        alert("You're dead");
         this.segments = [[5,5]];
       } else {
         this.segments.unshift(newHead);

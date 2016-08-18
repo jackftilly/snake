@@ -2,9 +2,10 @@ const Board = require('./board.js');
 const Snake = require('./snake.js');
 
 class Game {
-  constructor () {
-    this.snake = new Snake();
-    this.board = new Board(this.snake, 10);
+  constructor (length) {
+    this.snake = new Snake(length);
+    this.length = length;
+    this.board = new Board(this.snake, this.length);
   }
 
   step() {
@@ -14,8 +15,6 @@ class Game {
   }
 
   isEating() {
-    console.log(this.snake.segments[0]);
-    console.log(this.board.food);
     if (this.snake.segments[0][0] === this.board.food[0] &&
         this.snake.segments[0][1] === this.board.food[1]) {
       this.board.food = this.board.placeFood();

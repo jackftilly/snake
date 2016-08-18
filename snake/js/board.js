@@ -23,8 +23,8 @@ class  Board {
   }
 
   placeFood() {
-    let x = Math.floor(Math.random() * 10);
-    let y = Math.floor(Math.random() * 10);
+    let x = Math.floor(Math.random() * this.grid.length);
+    let y = Math.floor(Math.random() * this.grid.length);
     return [x,y];
   }
 

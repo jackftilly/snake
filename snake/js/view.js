@@ -9,17 +9,18 @@ var View = function (game, rootEl) {
 View.prototype.setupBoard = function () {
   const $rows = $('<ul></ul>');
 
-  for (var i = 0; i < 100; i++) {
-    let row = Math.floor(i / 10);
-    let col = Math.floor(i % 10);
+
+  for (var i = 0; i < Math.pow(this.game.length, 2); i++) {
+    let row = Math.floor(i / this.game.length);
+    let col = Math.floor(i % this.game.length);
     const $item = $('<li></li>');
     $item.data("pos", [row, col]);
     // $item.text('X');
     $rows.append($item);
   }
   $rows.css("list-style","none");
-
   this.$el.append($rows);
+
 
 };
 
@@ -27,6 +28,7 @@ View.prototype.render = function () {
   this.game.step();
   let board = this.game.board;
   $('ul').remove();
+
   const $rows = $('<ul></ul>');
   board.grid.forEach((row) => {
     row.forEach((element) => {
@@ -42,6 +44,7 @@ View.prototype.render = function () {
     });
   });
   $rows.css("list-style","none");
+  $rows.css("width",`${this.game.length * 22}px`);
   this.$el.append($rows);
 };
 
